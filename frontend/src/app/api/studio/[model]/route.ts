@@ -1,53 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 
-const allowedModels = [
-  "user",
-  "account",
-  "session",
-  "verificationToken",
-  "passwordResetToken",
-  "site",
-  "event",
-  "sessionRecord",
-  "widget",
-  "report",
-] as const;
-
-type ModelName = (typeof allowedModels)[number];
+// Notice we removed the direct Prisma import!
+// We only call our secure backend now.
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ model: string }> }
 ) {
   const { model } = await params;
-  const modelName = model.toLowerCase() as ModelName;
-
-  if (!allowedModels.includes(modelName)) {
-    return NextResponse.json({ error: "Model not allowed" }, { status: 400 });
-  }
-
+  
   try {
-    // @ts-ignore
-    const data = await prisma[modelName].findMany({
-      take: 50, // limit for safety
-      orderBy: { createdAt: "desc" },
+    // Get the user's token from the request header
+    const token = request.headers.get("authorization")?.replace("Bearer ", "");
+
+    // Ask the Express backend for the data securely
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studio/${model}?limit=50`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
 
-    return NextResponse.json({ data });
-  } catch (error) {
-    // some models don't have createdAt
-    try {
-      // @ts-ignore
-      const data = await prisma[modelName].findMany({
-        take: 50,
-      });
-      return NextResponse.json({ data });
-    } catch (err) {
-      return NextResponse.json(
-        { error: "Failed to fetch data" },
-        { status: 500 }
-      );
+    const data = await res.json();
+
+    if (!res.ok) {
+      return NextResponse.json({ error: data.message || "Failed to fetch" }, { status: res.status });
     }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to connect to backend" },
+      { status: 500 }
+    );
   }
 }
