@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "target": "ES2022",
     "module": "commonjs",
     "lib": ["ES2022"],
@@ -16,6 +17,6 @@
     "sourceMap": true,
     "types": ["node"]
   },
-  "include": ["src/**/*", "prisma/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "prisma"]
 }
