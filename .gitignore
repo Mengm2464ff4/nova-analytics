@@ -1,0 +1,46 @@
+# ===== Env files (NEVER commit) =====
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+*.env
+
+# ===== Node =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Build outputs =====
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# ===== Prisma =====
+backend/prisma/migrations/**/migration_lock.toml.bak
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== Testing =====
+coverage/
+.nyc_output/
+
+# ===== Misc =====
+project-structure.txt
