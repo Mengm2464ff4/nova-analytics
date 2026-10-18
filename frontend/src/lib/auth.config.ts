@@ -13,6 +13,7 @@ interface BackendLoginResponse {
 }
 
 export const authConfig = {
+  trustHost: true, // 👈 ADD THIS LINE HERE
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
